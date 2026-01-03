@@ -1,0 +1,52 @@
+{
+  "../../../../../@crx/manifest": {
+    "file": "assets/crx-manifest.js-DE-vXEI1.js",
+    "name": "crx-manifest.js",
+    "src": "../../../../../@crx/manifest",
+    "isEntry": true
+  },
+  "_client-C3Mcq2Xm.js": {
+    "file": "assets/client-C3Mcq2Xm.js",
+    "name": "client"
+  },
+  "_storage-DnL5_qqF.js": {
+    "file": "assets/storage-DnL5_qqF.js",
+    "name": "storage"
+  },
+  "index.tsx-loader.js": {
+    "file": "assets/index.tsx-loader-DXkWZIfk.js",
+    "src": "index.tsx-loader.js"
+  },
+  "src/background/index.ts": {
+    "file": "assets/index.ts-Ck-Dd6rS.js",
+    "name": "index.ts",
+    "src": "src/background/index.ts",
+    "isEntry": true,
+    "imports": [
+      "_storage-DnL5_qqF.js"
+    ]
+  },
+  "src/content/index.tsx": {
+    "file": "assets/index.tsx-8Fxem2rU.js",
+    "name": "index.tsx",
+    "src": "src/content/index.tsx",
+    "isEntry": true,
+    "imports": [
+      "_client-C3Mcq2Xm.js",
+      "_storage-DnL5_qqF.js"
+    ]
+  },
+  "src/popup/index.html": {
+    "file": "assets/index.html-4UCG8NwA.js",
+    "name": "index.html",
+    "src": "src/popup/index.html",
+    "isEntry": true,
+    "imports": [
+      "_client-C3Mcq2Xm.js",
+      "_storage-DnL5_qqF.js"
+    ],
+    "css": [
+      "assets/index-BXsjWxka.css"
+    ]
+  }
+}

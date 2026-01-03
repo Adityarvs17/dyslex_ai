@@ -1,0 +1,65 @@
+{
+  "manifest_version": 3,
+  "name": "LexiLens - Dyslexia Assistant",
+  "version": "1.0.1",
+  "description": "A comprehensive accessibility suite designed to improve reading fluency and comprehension for users with dyslexia, ADHD, and visual processing disorders.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "src/popup/index.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "LexiLens"
+  },
+  "background": {
+    "service_worker": "service-worker-loader.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "assets/index.tsx-loader-DXkWZIfk.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "permissions": [
+    "storage",
+    "activeTab",
+    "contextMenus",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "resources": [
+        "fonts/*",
+        "icons/*",
+        "hand-driver.js",
+        "iris-driver.js",
+        "webgazer.js",
+        "mediapipe/*",
+        "assets/client-C3Mcq2Xm.js",
+        "assets/storage-DnL5_qqF.js",
+        "assets/index.tsx-8Fxem2rU.js"
+      ],
+      "use_dynamic_url": false
+    }
+  ]
+}
