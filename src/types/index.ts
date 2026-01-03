@@ -27,9 +27,11 @@ export interface FocusModeSettings {
   dimOpacity: number; // 0.3 - 0.9
 }
 
-export interface IrisFocusSettings {
+
+export interface HandConductorSettings {
   enabled: boolean;
-  spotlightRadius: number;
+  conductingSensitivity: number; // 0.1 - 2.0
+  gestureShortcutsEnabled: boolean;
 }
 
 export interface HandFocusSettings {
@@ -42,7 +44,7 @@ export interface VisualAidsSettings {
   readingRuler: ReadingRulerSettings;
   screenTint: ScreenTintSettings;
   focusMode: FocusModeSettings;
-  irisFocus: IrisFocusSettings;
+  handConductor: HandConductorSettings;
   handFocus: HandFocusSettings;
 }
 
@@ -105,9 +107,10 @@ export const DEFAULT_SETTINGS: LexiLensSettings = {
       enabled: false,
       dimOpacity: 0.7,
     },
-    irisFocus: {
+    handConductor: {
       enabled: false,
-      spotlightRadius: 150,
+      conductingSensitivity: 1.0,
+      gestureShortcutsEnabled: true,
     },
     handFocus: {
       enabled: false,

@@ -18,9 +18,9 @@ import {
   disableBionicReading,
   enableSyllableSplitter,
   disableSyllableSplitter,
-  enableIrisFocus,
-  updateIrisFocus,
-  disableIrisFocus,
+  enableHandConductor,
+  updateHandConductor,
+  disableHandConductor,
   enableHandFocus,
   updateHandFocus,
   disableHandFocus,
@@ -92,11 +92,11 @@ export const App: React.FC = () => {
       disableSyllableSplitter();
     }
 
-    // Iris Focus (Eye Tracking)
-    if (settings.visualAids.irisFocus.enabled) {
-      enableIrisFocus(settings.visualAids.irisFocus);
+    // Hand Conductor (Rhythm Engine)
+    if (settings.visualAids.handConductor.enabled) {
+      enableHandConductor(settings.visualAids.handConductor);
     } else {
-      disableIrisFocus();
+      disableHandConductor();
     }
 
     // Hand Focus (Hand Tracking)
@@ -132,13 +132,44 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     if (isLoading || !settings.enabled) return;
-    updateIrisFocus(settings.visualAids.irisFocus);
-  }, [settings.visualAids.irisFocus, isLoading, settings.enabled]);
+    updateHandConductor(settings.visualAids.handConductor);
+  }, [settings.visualAids.handConductor, isLoading, settings.enabled]);
 
   useEffect(() => {
     if (isLoading || !settings.enabled) return;
     updateHandFocus(settings.visualAids.handFocus);
   }, [settings.visualAids.handFocus, isLoading, settings.enabled]);
+
+  // Listen for Hand Conductor Events
+  useEffect(() => {
+    if (!settings.enabled || !settings.visualAids.handConductor.enabled) return;
+
+    const handleScroll = (e: CustomEvent) => {
+      const { deltaY } = e.detail;
+      // Smooth scroll based on hand movement
+      window.scrollBy({
+        top: deltaY * 2, // Multiplier for sensitivity
+        behavior: 'auto' // 'smooth' might be too laggy for continuous input
+      });
+    };
+
+    const handleGesture = (e: CustomEvent) => {
+      const { direction } = e.detail;
+      if (direction === 'RIGHT') {
+        setIsOpen(prev => !prev); // Toggle panel
+      } else if (direction === 'LEFT') {
+        setIsOpen(false); // Close panel
+      }
+    };
+
+    window.addEventListener('LEXILENS_HAND_SCROLL', handleScroll as EventListener);
+    window.addEventListener('LEXILENS_HAND_GESTURE', handleGesture as EventListener);
+
+    return () => {
+      window.removeEventListener('LEXILENS_HAND_SCROLL', handleScroll as EventListener);
+      window.removeEventListener('LEXILENS_HAND_GESTURE', handleGesture as EventListener);
+    };
+  }, [settings.enabled, settings.visualAids.handConductor.enabled]);
 
   // Listen for extension messages (including Summarize)
   useEffect(() => {
@@ -148,7 +179,7 @@ export const App: React.FC = () => {
         setIsOpen(false); // Close panel if open
       }
     };
-    
+
     chrome.runtime.onMessage.addListener(handleMessage);
     return () => chrome.runtime.onMessage.removeListener(handleMessage);
   }, []);
@@ -162,7 +193,7 @@ export const App: React.FC = () => {
       disableFocusMode();
       disableBionicReading();
       disableSyllableSplitter();
-      disableIrisFocus();
+
       disableClickToRead();
     };
   }, []);
@@ -182,9 +213,9 @@ export const App: React.FC = () => {
 
       {/* Summary Modal */}
       {summaryText && (
-        <SummaryModal 
-          originalText={summaryText} 
-          onClose={() => setSummaryText(null)} 
+        <SummaryModal
+          originalText={summaryText}
+          onClose={() => setSummaryText(null)}
         />
       )}
 

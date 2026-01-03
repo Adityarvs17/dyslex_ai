@@ -7,7 +7,7 @@ import { getSettings, saveSettings, onSettingsChange } from '@/utils/storage';
 interface SettingsStore {
   settings: LexiLensSettings;
   isLoading: boolean;
-  
+
   // Actions
   initialize: () => Promise<void>;
   updateSettings: (partial: Partial<LexiLensSettings>) => void;
@@ -30,7 +30,7 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
   initialize: async () => {
     const settings = await getSettings();
     set({ settings, isLoading: false });
-    
+
     // Listen for changes from other contexts
     onSettingsChange((newSettings) => {
       set({ settings: newSettings });
@@ -55,7 +55,7 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
   updateVisualAids: (partial) => {
     const current = get().settings.visualAids;
     const newVisualAids = { ...current };
-    
+
     // Deep merge for nested objects
     if (partial.readingRuler) {
       newVisualAids.readingRuler = { ...current.readingRuler, ...partial.readingRuler };
@@ -66,13 +66,13 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
     if (partial.focusMode) {
       newVisualAids.focusMode = { ...current.focusMode, ...partial.focusMode };
     }
-    if (partial.irisFocus) {
-      newVisualAids.irisFocus = { ...current.irisFocus, ...partial.irisFocus };
+    if (partial.handConductor) {
+      newVisualAids.handConductor = { ...current.handConductor, ...partial.handConductor };
     }
     if (partial.handFocus) {
       newVisualAids.handFocus = { ...current.handFocus, ...partial.handFocus };
     }
-    
+
     const newSettings = {
       ...get().settings,
       visualAids: newVisualAids,
@@ -84,14 +84,14 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
   updateCognitive: (partial) => {
     const current = get().settings.cognitive;
     const newCognitive = { ...current };
-    
+
     if (partial.bionicReading) {
       newCognitive.bionicReading = { ...current.bionicReading, ...partial.bionicReading };
     }
     if (partial.syllableSplitter) {
       newCognitive.syllableSplitter = { ...current.syllableSplitter, ...partial.syllableSplitter };
     }
-    
+
     const newSettings = {
       ...get().settings,
       cognitive: newCognitive,

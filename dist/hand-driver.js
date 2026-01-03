@@ -5,7 +5,7 @@
  * UPDATED: Added handshake and robust initialization
  */
 
-(function() {
+(function () {
   const HAND_EVENT = 'LEXILENS_HAND_DATA';
   const ACK_EVENT = 'LEXILENS_HAND_ACK';
   let isRunning = false;
@@ -118,64 +118,64 @@
     const canvas = canvasElement;
     let ctx = null;
     if (canvas && canvas.style.display !== 'none') {
-        ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.save();
-        ctx.scale(1, 1); // No need to mirror canvas ctx if CSS transform handles it? Actually drawing is raw.
-        // If CSS transform scaleX(-1) is applied, we draw normally.
+      ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.scale(1, 1); // No need to mirror canvas ctx if CSS transform handles it? Actually drawing is raw.
+      // If CSS transform scaleX(-1) is applied, we draw normally.
     }
 
     if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-        const landmarks = results.multiHandLandmarks[0];
-        const indexTip = landmarks[8];
-        
-        // Convert normalized coordinates to screen coordinates
-        // Note: x is inverted because video is mirrored
-        const rawX = (1 - indexTip.x) * window.innerWidth;
-        const rawY = indexTip.y * window.innerHeight;
+      const landmarks = results.multiHandLandmarks[0];
+      const indexTip = landmarks[8];
 
-        smoothX = smooth(smoothX, rawX, SMOOTHING_FACTOR);
-        smoothY = smooth(smoothY, rawY, SMOOTHING_FACTOR);
+      // Convert normalized coordinates to screen coordinates
+      // Note: x is inverted because video is mirrored
+      const rawX = (1 - indexTip.x) * window.innerWidth;
+      const rawY = indexTip.y * window.innerHeight;
 
-        if (exceedsDeadZone(smoothX, smoothY, lastSentX, lastSentY)) {
-          const clampedX = Math.max(0, Math.min(window.innerWidth, smoothX));
-          const clampedY = Math.max(0, Math.min(window.innerHeight, smoothY));
+      smoothX = smooth(smoothX, rawX, SMOOTHING_FACTOR);
+      smoothY = smooth(smoothY, rawY, SMOOTHING_FACTOR);
 
-          window.postMessage({
-            type: HAND_EVENT,
-            payload: {
-              x: Math.round(clampedX),
-              y: Math.round(clampedY),
-              detected: true
-            }
-          }, '*');
+      if (exceedsDeadZone(smoothX, smoothY, lastSentX, lastSentY)) {
+        const clampedX = Math.max(0, Math.min(window.innerWidth, smoothX));
+        const clampedY = Math.max(0, Math.min(window.innerHeight, smoothY));
 
-          lastSentX = smoothX;
-          lastSentY = smoothY;
-        }
-
-        // Draw visualization
-        if (ctx) {
-             // Draw index finger
-            ctx.beginPath();
-            ctx.arc(indexTip.x * canvas.width, indexTip.y * canvas.height, 8, 0, 2 * Math.PI);
-            ctx.fillStyle = '#0ea5e9';
-            ctx.fill();
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-            
-            // Draw skeleton
-            // ... (simplified for perf)
-        }
-    } else {
         window.postMessage({
           type: HAND_EVENT,
-          payload: { detected: false }
+          payload: {
+            x: Math.round(clampedX),
+            y: Math.round(clampedY),
+            detected: true
+          }
         }, '*');
+
+        lastSentX = smoothX;
+        lastSentY = smoothY;
+      }
+
+      // Draw visualization
+      if (ctx) {
+        // Draw index finger
+        ctx.beginPath();
+        ctx.arc(indexTip.x * canvas.width, indexTip.y * canvas.height, 8, 0, 2 * Math.PI);
+        ctx.fillStyle = '#0ea5e9';
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Draw skeleton
+        // ... (simplified for perf)
+      }
+    } else {
+      window.postMessage({
+        type: HAND_EVENT,
+        payload: { detected: false }
+      }, '*');
     }
-    
-    if(ctx) ctx.restore();
+
+    if (ctx) ctx.restore();
   }
 
   /**
@@ -183,7 +183,7 @@
    */
   async function initMediaPipeHands(baseUrl) {
     log('Initializing MediaPipe Hands...');
-    
+
     // Default to CDN if no base provided (fallback)
     const assetBase = baseUrl || 'https://cdn.jsdelivr.net/npm/@mediapipe/hands/';
     log('Loading assets from:', assetBase);
@@ -196,7 +196,14 @@
     try {
       hands = new window.Hands({
         locateFile: (file) => {
-           return `${assetBase}${file}`;
+          // FORCE NON-SIMD: strict CSP/COOP policies on generic pages (like Wikipedia) 
+          // often block SIMD/Threading features. Fallback to standard WASM.
+          if (file.indexOf('simd') !== -1) {
+            const oldFile = file;
+            file = file.replace('_simd', '');
+            log(`Force-downgrading WASM: ${oldFile} -> ${file}`);
+          }
+          return `${assetBase}${file}`;
         }
       });
 
@@ -237,10 +244,10 @@
 
       video.srcObject = stream;
       await video.play();
-      
+
       // Force display block when active
       video.style.display = 'block';
-      if(canvasElement) canvasElement.style.display = 'block';
+      if (canvasElement) canvasElement.style.display = 'block';
 
       log('Camera started successfully');
 
@@ -248,11 +255,12 @@
       async function processFrame() {
         if (!isRunning) return;
 
-        if (hands && video.readyState >= 2) {
+        if (hands && video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0) {
           try {
             await hands.send({ image: video });
           } catch (e) {
-            // throttle errors
+            // Log the error once or periodically to avoid spam, but we need to see it
+            if (Math.random() < 0.01) error('Error in hands.send:', e);
           }
         }
         animationId = requestAnimationFrame(processFrame);
@@ -260,7 +268,7 @@
 
       isRunning = true;
       processFrame();
-      
+
       window.postMessage({ type: ACK_EVENT, status: 'STARTED' }, '*');
 
     } catch (err) {
@@ -289,7 +297,7 @@
       canvasElement.remove();
       canvasElement = null;
     }
-    
+
     window.postMessage({ type: ACK_EVENT, status: 'STOPPED' }, '*');
     log('Tracking stopped');
   }

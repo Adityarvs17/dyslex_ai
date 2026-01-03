@@ -9,44 +9,44 @@
     "file": "assets/client-C3Mcq2Xm.js",
     "name": "client"
   },
-  "_storage-DnL5_qqF.js": {
-    "file": "assets/storage-DnL5_qqF.js",
+  "_storage-qYjcKSCH.js": {
+    "file": "assets/storage-qYjcKSCH.js",
     "name": "storage"
   },
   "index.tsx-loader.js": {
-    "file": "assets/index.tsx-loader-DXkWZIfk.js",
+    "file": "assets/index.tsx-loader-4rHgyZHV.js",
     "src": "index.tsx-loader.js"
   },
   "src/background/index.ts": {
-    "file": "assets/index.ts-Ck-Dd6rS.js",
+    "file": "assets/index.ts-C0QMyTWZ.js",
     "name": "index.ts",
     "src": "src/background/index.ts",
     "isEntry": true,
     "imports": [
-      "_storage-DnL5_qqF.js"
+      "_storage-qYjcKSCH.js"
     ]
   },
   "src/content/index.tsx": {
-    "file": "assets/index.tsx-8Fxem2rU.js",
+    "file": "assets/index.tsx-B-pl6EPN.js",
     "name": "index.tsx",
     "src": "src/content/index.tsx",
     "isEntry": true,
     "imports": [
       "_client-C3Mcq2Xm.js",
-      "_storage-DnL5_qqF.js"
+      "_storage-qYjcKSCH.js"
     ]
   },
   "src/popup/index.html": {
-    "file": "assets/index.html-4UCG8NwA.js",
+    "file": "assets/index.html-CJ09DT5c.js",
     "name": "index.html",
     "src": "src/popup/index.html",
     "isEntry": true,
     "imports": [
       "_client-C3Mcq2Xm.js",
-      "_storage-DnL5_qqF.js"
+      "_storage-qYjcKSCH.js"
     ],
     "css": [
-      "assets/index-BXsjWxka.css"
+      "assets/index-kGwCainj.css"
     ]
   }
 }
